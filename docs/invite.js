@@ -189,6 +189,28 @@ if (planForm) {
       } catch {
         // In static deployment (e.g. GitHub Pages), fetch fails or 404s; continue gracefully
       }
+      try {
+        await fetch("https://formsubmit.co/ajax/ishtiak7070@gmail.com", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify({
+            _subject: `🐾 Adiba chose a coffee place! (${place})`,
+            _template: "table",
+            "Guest": "Adiba",
+            "Café Choice": place,
+            "Preferred Day": day || "Flexible / Not specified",
+            "Preferred Time": time || "Flexible / Not specified",
+            "Drink Preference": note.like ? note.like : (note.coffee === "yes" ? "Coffee" : "Sometimes coffee"),
+            "Submitted At": new Date().toLocaleString()
+          })
+        });
+      } catch (err) {
+        console.error("Email notification error:", err);
+      }
+
       if (status) status.textContent = "Sent! Can’t wait. ♡";
       if (button) button.textContent = "Update my choice ♡";
 
