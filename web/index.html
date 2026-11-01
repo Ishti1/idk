@@ -7,15 +7,15 @@
   <meta name="referrer" content="no-referrer">
   <meta name="description" content="A little note, hand-delivered by the café cat.">
   <title>Purr &amp; Pour · A coffee note</title>
-  <link rel="icon" href="/favicon.svg">
-  <link rel="stylesheet" href="/style.css">
-  <script src="/invite.js" defer></script>
+  <link rel="icon" href="favicon.svg">
+  <link rel="stylesheet" href="style.css">
+  <script src="invite.js" defer></script>
 </head>
 <body>
   <p class="greeting">hii adiba</p>
   <main class="invite">
     <article class="letter move-0" id="letter" aria-labelledby="heading">
-      <img class="cafe-cat" src="/cafe-cat.svg" width="440" height="336" alt="A calico cat with a pink coffee cup.">
+      <img class="cafe-cat" src="cafe-cat.svg" width="440" height="336" alt="A calico cat with a pink coffee cup.">
       <div class="question">
         <h1 id="heading" tabindex="-1">Do you like <em>coffee?</em></h1>
         <p id="message" hidden></p>
@@ -33,7 +33,7 @@
   <template id="date-heading">Would you like to have coffee with me <em>sometime?</em></template>
   <dialog id="happy-dialog" aria-labelledby="happy-title">
     <div class="modal-inner">
-      <div class="happy-art"><img src="/cafe-cat.svg" alt=""><span aria-hidden="true">♥</span></div>
+      <div class="happy-art"><img src="cafe-cat.svg" alt=""><span aria-hidden="true">♥</span></div>
       <h2 id="happy-title">Lessgooooo! ♡</h2>
       <p>Choose the coffee place you want to go.</p>
       <p><a href="https://www.google.com/maps/search/coffee+shops+in+Uttara+Dhaka" target="_blank" rel="noopener noreferrer">Explore more cafés in Uttara ↗</a></p>
@@ -62,10 +62,13 @@
   </dialog>
   <dialog id="celebration-dialog" aria-labelledby="celebration-title">
     <div class="modal-inner">
-      <div class="happy-art"><img src="/cafe-cat.svg" alt=""><span aria-hidden="true">🎉</span></div>
+      <div class="happy-art"><img src="cafe-cat.svg" alt=""><span aria-hidden="true">🎉</span></div>
       <h2 id="celebration-title">Lessgooooo! 🎉</h2>
-      <p>Your coffee choice has been sent! Can’t wait to meet you. ♡</p>
-      <button id="celebration-close" class="primary">Close</button>
+      <p id="celebration-summary">Your coffee choice has been sent! Can’t wait to meet you. ♡</p>
+      <div class="buttons" style="justify-content:center; flex-direction:column; gap:10px;">
+        <a id="celebration-whatsapp" class="primary" style="text-decoration:none; display:none;" target="_blank">Share choice on WhatsApp ♡</a>
+        <button id="celebration-close" class="secondary">Close</button>
+      </div>
     </div>
   </dialog>
   <dialog id="like-dialog" aria-labelledby="like-title">

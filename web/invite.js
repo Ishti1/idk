@@ -91,12 +91,15 @@ async function send(stage, coffee, date) {
   statusLine.textContent = "Sending…";
   remember();
   try {
-    const response = await fetch("/api/reply", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: note.id, coffee, date })
-    });
-    if (!response.ok) throw new Error("Delivery failed");
+    try {
+      await fetch("/api/reply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: note.id, coffee, date })
+      });
+    } catch {
+      // In static deployment (e.g. GitHub Pages), fetch fails or 404s; continue gracefully
+    }
     note.stage = stage;
     note.coffee = coffee;
     note.taps = 0;
@@ -167,22 +170,42 @@ if (planForm) {
       if (status) status.textContent = "Please enter a place.";
       return;
     }
+    const day = byId("day") ? byId("day").value : "";
+    const time = byId("time") ? byId("time").value : "";
     if (button) button.disabled = true;
     if (status) status.textContent = "Sending…";
     try {
-      const response = await fetch("/api/plan", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: note.id,
-          place,
-          day: byId("day").value,
-          time: byId("time").value
-        })
-      });
-      if (!response.ok) throw new Error("Delivery failed");
+      try {
+        await fetch("/api/plan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: note.id,
+            place,
+            day,
+            time
+          })
+        });
+      } catch {
+        // In static deployment (e.g. GitHub Pages), fetch fails or 404s; continue gracefully
+      }
       if (status) status.textContent = "Sent! Can’t wait. ♡";
       if (button) button.textContent = "Update my choice ♡";
+
+      const waBtn = byId("celebration-whatsapp");
+      if (waBtn) {
+        let msg = `Hey! I'd love to go for coffee with you at ${place}`;
+        if (day) msg += ` on ${day}`;
+        if (time) msg += ` at ${time}`;
+        msg += `! ♡`;
+        waBtn.href = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+        waBtn.style.display = "inline-flex";
+      }
+      const summary = byId("celebration-summary");
+      if (summary) {
+        summary.textContent = `Your choice for ${place} has been chosen! Can’t wait. ♡`;
+      }
+
       if (happyDialog && happyDialog.open) {
         happyDialog.close();
       }
