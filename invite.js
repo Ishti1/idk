@@ -48,7 +48,7 @@ likeSubmit.addEventListener("click", () => {
 });
 
 function remember() {
-  try { sessionStorage.setItem(sessionKey, JSON.stringify(note)); } catch {}
+  try { sessionStorage.setItem(sessionKey, JSON.stringify(note)); } catch { }
 }
 
 function showTapCount() {
