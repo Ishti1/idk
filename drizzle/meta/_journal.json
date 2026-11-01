@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1793535950714,
+      "tag": "0000_wild_ikaris",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1793538000000,
+      "tag": "0001_cafe_plans",
+      "breakpoints": true
+    }
+  ]
+}

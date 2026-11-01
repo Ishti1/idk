@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="A little note, hand-delivered by the café cat.">
+  <title>Purr &amp; Pour · A coffee note</title>
+  <link rel="icon" href="/favicon.svg">
+  <link rel="stylesheet" href="/style.css">
+  <script src="/invite.js" defer></script>
+</head>
+<body>
+  <p class="greeting">hii adiba</p>
+  <main class="invite">
+    <article class="letter move-0" id="letter" aria-labelledby="heading">
+      <img class="cafe-cat" src="/cafe-cat.svg" width="440" height="336" alt="A calico cat with a pink coffee cup.">
+      <div class="question">
+        <h1 id="heading" tabindex="-1">Do you like <em>coffee?</em></h1>
+        <p id="message" hidden></p>
+        <p id="hint" role="status" hidden></p>
+        <div id="choices" class="buttons">
+          <button class="primary" id="yes">Yes</button>
+          <button class="secondary" id="no">No</button>
+          <button class="secondary" id="sometimes">Sometimes</button>
+        </div>
+        <p class="send-status" id="status" role="status"></p>
+        <noscript>Turn on JavaScript to reply.</noscript>
+      </div>
+    </article>
+  </main>
+  <template id="date-heading">Would you like to have coffee with me <em>sometime?</em></template>
+  <dialog id="happy-dialog" aria-labelledby="happy-title">
+    <div class="modal-inner">
+      <div class="happy-art"><img src="/cafe-cat.svg" alt=""><span aria-hidden="true">♥</span></div>
+      <h2 id="happy-title">Lessgooooo! ♡</h2>
+      <p>Choose the coffee place you want to go.</p>
+      <p><a href="https://www.google.com/maps/search/coffee+shops+in+Uttara+Dhaka" target="_blank" rel="noopener noreferrer">Explore more cafés in Uttara ↗</a></p>
+      <form id="plan-form">
+        <label for="cafe">Coffee place</label>
+        <select id="cafe" required>
+          <option value="">Choose a café</option>
+          <option>North End Coffee Roasters — Liberty Tower</option>
+          <option>Crimson Cup — Quantum Mostafa Towers</option>
+          <option>Gloria Jean’s Coffees — Navana Centroid</option>
+          <option>Tabaq Coffee — Chef’s Table Centrepoint</option>
+          <option>Biancaffè — Uttara</option>
+          <option>1st Cup Coffee — Giant Business Tower</option>
+          <option value="other">Type my own choice</option>
+        </select>
+        <label for="other-cafe" id="other-label" hidden>Type the name of your café</label>
+        <input id="other-cafe" maxlength="120" placeholder="Type your café choice here" hidden>
+        <label for="day">A day that works for you (optional)</label>
+        <input id="day" type="date">
+        <label for="time">A time you like (optional)</label>
+        <input id="time" type="time">
+        <button class="primary" type="submit">Send my choice ♡</button>
+        <p id="plan-status" role="status"></p>
+      </form>
+    </div>
+  </dialog>
+  <dialog id="celebration-dialog" aria-labelledby="celebration-title">
+    <div class="modal-inner">
+      <div class="happy-art"><img src="/cafe-cat.svg" alt=""><span aria-hidden="true">🎉</span></div>
+      <h2 id="celebration-title">Lessgooooo! 🎉</h2>
+      <p>Your coffee choice has been sent! Can’t wait to meet you. ♡</p>
+      <button id="celebration-close" class="primary">Close</button>
+    </div>
+  </dialog>
+  <dialog id="like-dialog" aria-labelledby="like-title">
+    <div class="modal-inner">
+      <h2 id="like-title">What do you like?</h2>
+      <input id="like-input" type="text" placeholder="Your favorite thing" />
+      <button id="like-submit" class="primary">Submit</button>
+    </div>
+  </dialog>
+</body>
+</html>
