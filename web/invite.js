@@ -192,20 +192,6 @@ if (planForm) {
       if (status) status.textContent = "Sent! Can’t wait. ♡";
       if (button) button.textContent = "Update my choice ♡";
 
-      const waBtn = byId("celebration-whatsapp");
-      if (waBtn) {
-        let msg = `Hey! I'd love to go for coffee with you at ${place}`;
-        if (day) msg += ` on ${day}`;
-        if (time) msg += ` at ${time}`;
-        msg += `! ♡`;
-        waBtn.href = `https://wa.me/?text=${encodeURIComponent(msg)}`;
-        waBtn.style.display = "inline-flex";
-      }
-      const summary = byId("celebration-summary");
-      if (summary) {
-        summary.textContent = `Your choice for ${place} has been chosen! Can’t wait. ♡`;
-      }
-
       if (happyDialog && happyDialog.open) {
         happyDialog.close();
       }
