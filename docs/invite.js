@@ -42,11 +42,15 @@ async function sendEmail(fields) {
   const response = await fetch(emailEndpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json", "Accept": "application/json" },
-    body: JSON.stringify(fields)
+    // The page sets Referrer-Policy: no-referrer, so tell FormSubmit the page URL explicitly.
+    body: JSON.stringify({ ...fields, _url: window.location.href.split("#")[0] })
   });
-  const result = await response.json();
-  if (!response.ok || (result.success !== true && result.success !== "true")) {
-    throw new Error(result.message || "Email service rejected the submission");
+  const body = await response.text();
+  let result;
+  try { result = JSON.parse(body); } catch { result = null; }
+  if (!response.ok || (result?.success !== true && result?.success !== "true")) {
+    const reason = result?.message || result?.error || body || "No response details";
+    throw new Error(`FormSubmit returned HTTP ${response.status}: ${reason}`);
   }
 }
 
@@ -137,7 +141,8 @@ async function send(stage, coffee, date) {
     remember();
     renderStage();
     if (stage !== "yes") heading.focus({ preventScroll: true });
-  } catch {
+  } catch (error) {
+    console.error("Reply email delivery failed:", error);
     statusLine.textContent = "Couldn’t email your reply. Please try again.";
   } finally {
     sending = false;
