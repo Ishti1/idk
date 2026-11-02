@@ -36,6 +36,34 @@ const otherCafe = byId("other-cafe");
 const otherLabel = byId("other-label");
 const planForm = byId("plan-form");
 let sending = false;
+const emailEndpoint = "https://formsubmit.co/ajax/ishtiak7070@gmail.com";
+
+async function sendEmail(fields) {
+  const response = await fetch(emailEndpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Accept": "application/json" },
+    body: JSON.stringify(fields)
+  });
+  const result = await response.json();
+  if (!response.ok || (result.success !== true && result.success !== "true")) {
+    throw new Error(result.message || "Email service rejected the submission");
+  }
+}
+
+async function saveReply(reply) {
+  try {
+    const response = await fetch("/api/reply", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(reply)
+    });
+    if (!response.ok) throw new Error(`Reply API returned ${response.status}`);
+  } catch (error) {
+    // Email delivery is the visitor-facing confirmation; D1 remains a secondary copy.
+    console.error("Reply inbox save error:", error);
+  }
+}
+
 // Handle like dialog submission
 likeSubmit.addEventListener("click", () => {
   const val = likeInput.value.trim();
@@ -91,14 +119,17 @@ async function send(stage, coffee, date) {
   statusLine.textContent = "Sending…";
   remember();
   try {
-    try {
-      await fetch("/api/reply", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: note.id, coffee, date })
+    await saveReply({ id: note.id, coffee, date });
+    if (stage === "yes" || stage === "no" || stage === "no-coffee") {
+      await sendEmail({
+        _subject: `🐾 New Purr & Pour reply: ${stage === "yes" ? "Yes" : "No"}`,
+        _template: "table",
+        Guest: "Adiba",
+        "Coffee preference": coffee === "sometimes" ? "Sometimes" : coffee === "yes" ? "Yes" : "No",
+        "Favorite thing": note.like || "",
+        "Date response": stage === "yes" ? "Yes" : "No",
+        "Submitted At": new Date().toLocaleString()
       });
-    } catch {
-      // In static deployment (e.g. GitHub Pages), fetch fails or 404s; continue gracefully
     }
     note.stage = stage;
     note.coffee = coffee;
@@ -107,7 +138,7 @@ async function send(stage, coffee, date) {
     renderStage();
     if (stage !== "yes") heading.focus({ preventScroll: true });
   } catch {
-    statusLine.textContent = "Couldn’t send. Tap your answer to retry.";
+    statusLine.textContent = "Couldn’t email your reply. Please try again.";
   } finally {
     sending = false;
     yes.disabled = no.disabled = sometimes.disabled = false;
@@ -126,7 +157,7 @@ yes.addEventListener("click", () => {
 });
 
 sometimes.addEventListener("click", () => {
-  if (note.stage === "coffee") send("date", "yes", null);
+  if (note.stage === "coffee") send("date", "sometimes", null);
 });
 no.addEventListener("click", () => {
   if (note.stage === "coffee") {
@@ -189,27 +220,16 @@ if (planForm) {
       } catch {
         // In static deployment (e.g. GitHub Pages), fetch fails or 404s; continue gracefully
       }
-      try {
-        await fetch("https://formsubmit.co/ajax/ishtiak7070@gmail.com", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          },
-          body: JSON.stringify({
-            _subject: `🐾 Adiba chose a coffee place! (${place})`,
-            _template: "table",
-            "Guest": "Adiba",
-            "Café Choice": place,
-            "Preferred Day": day || "Flexible / Not specified",
-            "Preferred Time": time || "Flexible / Not specified",
-            "Drink Preference": note.like ? note.like : (note.coffee === "yes" ? "Coffee" : "Sometimes coffee"),
-            "Submitted At": new Date().toLocaleString()
-          })
-        });
-      } catch (err) {
-        console.error("Email notification error:", err);
-      }
+      await sendEmail({
+        _subject: `🐾 Adiba chose a coffee place! (${place})`,
+        _template: "table",
+        Guest: "Adiba",
+        "Café Choice": place,
+        "Preferred Day": day || "Flexible / Not specified",
+        "Preferred Time": time || "Flexible / Not specified",
+        "Drink Preference": note.like || (note.coffee === "sometimes" ? "Sometimes coffee" : note.coffee === "yes" ? "Coffee" : "Other"),
+        "Submitted At": new Date().toLocaleString()
+      });
 
       if (status) status.textContent = "Sent! Can’t wait. ♡";
       if (button) button.textContent = "Update my choice ♡";
