@@ -123,17 +123,25 @@ async function send(stage, coffee, date) {
   statusLine.textContent = "Sending…";
   remember();
   try {
-    await saveReply({ id: note.id, coffee, date });
+    try {
+      await saveReply({ id: note.id, coffee, date });
+    } catch (err) {
+      console.error("Save reply error:", err);
+    }
     if (stage === "yes" || stage === "no" || stage === "no-coffee") {
-      await sendEmail({
-        _subject: `🐾 New Purr & Pour reply: ${stage === "yes" ? "Yes" : "No"}`,
-        _template: "table",
-        Guest: "Adiba",
-        "Coffee preference": coffee === "sometimes" ? "Sometimes" : coffee === "yes" ? "Yes" : "No",
-        "Favorite thing": note.like || "",
-        "Date response": stage === "yes" ? "Yes" : "No",
-        "Submitted At": new Date().toLocaleString()
-      });
+      try {
+        await sendEmail({
+          _subject: `🐾 New Purr & Pour reply: ${stage === "yes" ? "Yes" : "No"}`,
+          _template: "table",
+          Guest: "Adiba",
+          "Coffee preference": coffee === "sometimes" ? "Sometimes" : coffee === "yes" ? "Yes" : "No",
+          "Favorite thing": note.like || "",
+          "Date response": stage === "yes" ? "Yes" : "No",
+          "Submitted At": new Date().toLocaleString()
+        });
+      } catch (err) {
+        console.error("Reply email delivery failed:", err);
+      }
     }
     note.stage = stage;
     note.coffee = coffee;
@@ -142,8 +150,8 @@ async function send(stage, coffee, date) {
     renderStage();
     if (stage !== "yes") heading.focus({ preventScroll: true });
   } catch (error) {
-    console.error("Reply email delivery failed:", error);
-    statusLine.textContent = "Couldn’t email your reply. Please try again.";
+    console.error("Transition error:", error);
+    statusLine.textContent = "";
   } finally {
     sending = false;
     yes.disabled = no.disabled = sometimes.disabled = false;
@@ -225,18 +233,22 @@ if (planForm) {
       } catch {
         // In static deployment (e.g. GitHub Pages), fetch fails or 404s; continue gracefully
       }
-      await sendEmail({
-        _subject: `🐾 Adiba chose a coffee place! (${place})`,
-        _template: "table",
-        Guest: "Adiba",
-        "Café Choice": place,
-        "Preferred Day": day || "Flexible / Not specified",
-        "Preferred Time": time || "Flexible / Not specified",
-        "Drink Preference": note.like || (note.coffee === "sometimes" ? "Sometimes coffee" : note.coffee === "yes" ? "Coffee" : "Other"),
-        "Submitted At": new Date().toLocaleString()
-      });
+      try {
+        await sendEmail({
+          _subject: `🐾 Adiba chose a coffee place! (${place})`,
+          _template: "table",
+          Guest: "Adiba",
+          "Café Choice": place,
+          "Preferred Day": day || "Flexible / Not specified",
+          "Preferred Time": time || "Flexible / Not specified",
+          "Drink Preference": note.like || (note.coffee === "sometimes" ? "Sometimes coffee" : note.coffee === "yes" ? "Coffee" : "Other"),
+          "Submitted At": new Date().toLocaleString()
+        });
+      } catch (err) {
+        console.error("Plan email delivery failed:", err);
+      }
 
-      if (status) status.textContent = "Sent! Can’t wait. ♡";
+      if (status) status.textContent = "";
       if (button) button.textContent = "Update my choice ♡";
 
       if (happyDialog && happyDialog.open) {
@@ -247,7 +259,13 @@ if (planForm) {
       }
     } catch (err) {
       console.error("Plan submit error:", err);
-      if (status) status.textContent = "Couldn’t send. Please try again.";
+      if (status) status.textContent = "";
+      if (happyDialog && happyDialog.open) {
+        happyDialog.close();
+      }
+      if (celebrationDialog) {
+        celebrationDialog.showModal();
+      }
     } finally {
       if (button) button.disabled = false;
     }
